@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- qits-agents-contract: the contract through which a project declares its long-running agents
+         ("pets") as code. A project implements AgentRoster in its own
+         <projectslug>-agents-roster-javalib; qits-agents-service (epic qits-2518) loads the rosters,
+         validates them and restarts an agent exactly when its canonical document's hash changes.
+
+         ONE MODULE AT THE ROOT: this repo produces one jar, so this pom is the parent and the module
+         at once.
+
+         PLAIN JAVA, NO RUNTIME DEPENDENCIES. Every roster jar compiles against this one, so it must
+         drag nothing in; the canonical JSON writer is hand-written for the same reason. quarkus-bom
+         is imported in dependencyManagement ONLY, to align the junit version with the estate.
+
+         A CLONE OF THIS REPO ALONE MUST BUILD: `./mvnw verify`, no network service, no platform
+         registry (nothing here comes from it, so there is no <repositories> block). -->
+    <groupId>eu.wohlben.qits</groupId>
+    <artifactId>qits-agents-contract</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>qits-agents-contract</name>
+
+    <properties>
+        <maven.compiler.release>25</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.version>3.40.1</quarkus.platform.version>
+
+        <!-- Passed by the maven-library release recipe. Nothing here resolves from the platform
+             registry, so no <repositories> block reads it; it stays so the recipe's
+             -Dqits.maven.repository.url has the same property to land on as in every other library. -->
+        <qits.maven.repository.url>https://registry.qits.wohlben.eu/artifacts/maven/maven</qits.maven.repository.url>
+
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler-plugin.version}</version>
+                <configuration>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

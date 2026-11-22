@@ -1,0 +1,5 @@
+# Released as a plain maven library: every <projectslug>-agents-roster-javalib and
+# qits-agents-service pin this jar by its CalVer, stamped by the maven-library recipe.
+archetype: maven-library
+artifacts:
+  - { type: maven, name: "eu.wohlben.qits:qits-agents-contract", sbom: target/sbom.json }
